@@ -101,6 +101,7 @@
             gap: 15px;
             justify-content: center;
             margin: 20px 0;
+            flex-wrap: wrap;
         }
 
         button {
@@ -234,6 +235,25 @@
             70% { box-shadow: 0 0 0 10px rgba(66, 153, 225, 0); }
             100% { box-shadow: 0 0 0 0 rgba(66, 153, 225, 0); }
         }
+
+        .share-feedback {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .share-feedback.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -250,6 +270,7 @@
             <button id="submitGrid">Submit Grid</button>
             <button id="resetGame">New Game</button>
             <button id="hintButton">Hint</button>
+            <button id="shareButton" disabled>Share Score</button>
         </div>
         <div class="found-words">
             <h3>Found Words</h3>
@@ -269,6 +290,7 @@
         <div class="spinner"></div>
         <span>Checking words...</span>
     </div>
+    <div id="shareFeedback" class="share-feedback">Score copied to clipboard!</div>
 
     <script>
         const dictionary = new Set([
@@ -934,6 +956,7 @@
                 cell.classList.add('locked');
             });
             document.getElementById('submitGrid').disabled = true;
+            document.getElementById('shareButton').disabled = false;
             playSound('complete');
         });
 
@@ -946,6 +969,7 @@
             document.getElementById('score').textContent = score;
             document.getElementById('foundWordsList').innerHTML = '';
             document.getElementById('submitGrid').disabled = false;
+            document.getElementById('shareButton').disabled = true;
             document.querySelectorAll('.cell').forEach(cell => {
                 cell.classList.remove('locked');
             });
@@ -996,6 +1020,32 @@
         document.getElementById('highScore').textContent = highScore;
         initializeGrid();
         startTimer();
+
+        document.getElementById('shareButton').addEventListener('click', async () => {
+            const time = document.getElementById('timer').textContent;
+            const words = Array.from(foundWords).sort((a, b) => {
+                if (a.length !== b.length) return a.length - b.length;
+                return a.localeCompare(b);
+            });
+            
+            const shareText = `🎮 Word Block Puzzle Score 🎮\n\n` +
+                `Score: ${score} points\n` +
+                `Time: ${time}\n` +
+                `Words Found: ${words.length}\n\n` +
+                `Words:\n${words.join(', ')}\n\n` +
+                `Play at: https://mik-g-dev.github.io/word-block-puzzle/`;
+
+            try {
+                await navigator.clipboard.writeText(shareText);
+                const feedback = document.getElementById('shareFeedback');
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+        });
     </script>
 </body>
 </html>
