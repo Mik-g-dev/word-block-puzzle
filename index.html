@@ -1023,16 +1023,11 @@
 
         document.getElementById('shareButton').addEventListener('click', async () => {
             const time = document.getElementById('timer').textContent;
-            const words = Array.from(foundWords).sort((a, b) => {
-                if (a.length !== b.length) return a.length - b.length;
-                return a.localeCompare(b);
-            });
             
             const shareText = `🎮 Word Block Puzzle Score 🎮\n\n` +
                 `Score: ${score} points\n` +
                 `Time: ${time}\n` +
-                `Words Found: ${words.length}\n\n` +
-                `Words:\n${words.join(', ')}\n\n` +
+                `Words Found: ${foundWords.size}\n\n` +
                 `Play at: https://mik-g-dev.github.io/word-block-puzzle/`;
 
             try {
