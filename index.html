@@ -159,6 +159,36 @@
             border-radius: 4px;
             color: #2c3e50;
         }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -178,21 +208,19 @@
             <div id="foundWordsList"></div>
         </div>
     </div>
+    <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <span>Checking words...</span>
+    </div>
 
     <script>
-        const dictionary = new Set([
-            // Add all your dictionary words here
-            "yak", "yes", "yet", "you", "sure", "set", "toe", "use", "sue", "rue", "see", "sea", "sat", "rat", 
-            "ate", "eat", "tea", "are", "ear", "art", "tar", "red", "bed", "bad", "yam", "yap", "yaw", "yea",
-            // ... rest of the dictionary
-        ]);
-
         let grid = [];
         let selectedCells = [];
         let remainingSwaps = 5;
         let score = 0;
         let foundWords = new Set();
         let isGridLocked = false;
+        let wordCheckCache = new Map(); // Cache for API responses
 
         function generateLetter() {
             const vowels = 'AEIOU';
@@ -200,6 +228,85 @@
             return Math.random() < 0.3 ? 
                 vowels[Math.floor(Math.random() * vowels.length)] :
                 consonants[Math.floor(Math.random() * consonants.length)];
+        }
+
+        async function isValidWord(word) {
+            word = word.toLowerCase();
+            
+            // Check cache first
+            if (wordCheckCache.has(word)) {
+                return wordCheckCache.get(word);
+            }
+
+            // Only check words of length 3-5
+            if (word.length < 3 || word.length > 5) {
+                wordCheckCache.set(word, false);
+                return false;
+            }
+
+            try {
+                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+                const isValid = response.ok;
+                wordCheckCache.set(word, isValid);
+                return isValid;
+            } catch (error) {
+                console.error('Error checking word:', word, error);
+                return false;
+            }
+        }
+
+        async function findAllWords() {
+            const words = new Set();
+            const directions = [
+                [0, 1],   // right
+                [1, 0],   // down
+                [1, 1],   // diagonal down-right
+                [-1, 1],  // diagonal up-right
+                [0, -1],  // left
+                [-1, 0],  // up
+                [-1, -1], // diagonal up-left
+                [1, -1]   // diagonal down-left
+            ];
+
+            async function checkWord(startRow, startCol, dx, dy) {
+                let word = '';
+                let r = startRow;
+                let c = startCol;
+
+                while (word.length < 5 && r >= 0 && r < 5 && c >= 0 && c < 5) {
+                    word += grid[r][c];
+                    
+                    if (word.length >= 3) {
+                        if (await isValidWord(word)) {
+                            console.log(`Found word: ${word} at [${startRow},${startCol}] direction [${dx},${dy}]`);
+                            words.add(word.toUpperCase());
+                        }
+                    }
+                    
+                    r += dx;
+                    c += dy;
+                }
+            }
+
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'flex';
+
+            try {
+                // Check all positions and directions
+                for (let row = 0; row < 5; row++) {
+                    for (let col = 0; col < 5; col++) {
+                        for (const [dx, dy] of directions) {
+                            await checkWord(row, col, dx, dy);
+                        }
+                    }
+                }
+            } finally {
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+            }
+
+            console.log('All found words:', Array.from(words));
+            return words;
         }
 
         function initializeGrid() {
@@ -255,55 +362,6 @@
             }
         }
 
-        function findAllWords() {
-            const words = new Set();
-            const directions = [
-                [0, 1],   // right
-                [1, 0],   // down
-                [1, 1],   // diagonal down-right
-                [-1, 1],  // diagonal up-right
-                [0, -1],  // left
-                [-1, 0],  // up
-                [-1, -1], // diagonal up-left
-                [1, -1]   // diagonal down-left
-            ];
-
-            function checkWord(startRow, startCol, dx, dy) {
-                let word = '';
-                let r = startRow;
-                let c = startCol;
-
-                // Build word up to 5 letters
-                while (word.length < 5 && r >= 0 && r < 5 && c >= 0 && c < 5) {
-                    word += grid[r][c];
-                    
-                    // Check if current word length is valid (3-5 letters)
-                    if (word.length >= 3) {
-                        const wordLower = word.toLowerCase();
-                        if (dictionary.has(wordLower)) {
-                            console.log(`Found word: ${word} at [${startRow},${startCol}] direction [${dx},${dy}]`);
-                            words.add(wordLower.toUpperCase());
-                        }
-                    }
-                    
-                    r += dx;
-                    c += dy;
-                }
-            }
-
-            // Check all positions and directions
-            for (let row = 0; row < 5; row++) {
-                for (let col = 0; col < 5; col++) {
-                    for (const [dx, dy] of directions) {
-                        checkWord(row, col, dx, dy);
-                    }
-                }
-            }
-
-            console.log('All found words:', Array.from(words));
-            return words;
-        }
-
         function calculateScore(words) {
             return Array.from(words).reduce((total, word) => {
                 const points = Math.pow(2, word.length - 3);
@@ -323,8 +381,8 @@
             ).join(' ');
         }
 
-        document.getElementById('submitGrid').addEventListener('click', () => {
-            const words = findAllWords();
+        document.getElementById('submitGrid').addEventListener('click', async () => {
+            const words = await findAllWords();
             foundWords = words;
             score = calculateScore(words);
             document.getElementById('score').textContent = score;
@@ -342,6 +400,7 @@
             remainingSwaps = 5;
             score = 0;
             foundWords.clear();
+            wordCheckCache.clear(); // Clear the cache when starting a new game
             isGridLocked = false;
             document.getElementById('swaps').textContent = remainingSwaps;
             document.getElementById('score').textContent = score;
