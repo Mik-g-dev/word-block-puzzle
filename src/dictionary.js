@@ -50,7 +50,7 @@ export async function loadDictionary() {
 }
 
 // Dictionary of valid words for the game
-window.DICTIONARY = new Set([
+const DICTIONARY = new Set([
     // Common 3-letter words
     'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'any', 'can', 'had', 'her',
     'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new',
