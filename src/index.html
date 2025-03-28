@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Block Puzzle</title>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
@@ -8,173 +10,35 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
             margin: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #2c3e50;
+            padding: 20px;
+            background-color: #f0f2f5;
+            color: #333;
         }
 
         .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
             text-align: center;
         }
 
         h1 {
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            font-size: 2.5rem;
-            font-weight: 600;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin: 20px auto;
-            max-width: 400px;
-        }
-
-        .cell {
-            aspect-ratio: 1;
-            border: none;
-            background: #f8f9fa;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #2c3e50;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .cell:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-            background: #e9ecef;
-        }
-
-        .cell.selected {
-            background: #4299e1;
-            color: white;
-            transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(66, 153, 225, 0.3);
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        button {
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #4299e1;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(66, 153, 225, 0.3);
-            background: #3182ce;
-        }
-
-        .stats {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            font-size: 1.1rem;
-        }
-
-        .found-words {
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .word-chip {
-            background: #e9ecef;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: #2c3e50;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .swaps-remaining {
-            font-size: 1.2rem;
-            color: #4299e1;
-            font-weight: 600;
-            margin: 15px 0;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .score {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 15px 0;
-            animation: pulse 2s infinite;
+            color: #1a73e8;
+            margin-bottom: 20px;
         }
 
         .instructions {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
             text-align: left;
-            line-height: 1.6;
         }
 
-        .instructions h3 {
-            color: #4299e1;
-            margin-bottom: 10px;
+        .instructions h2 {
+            color: #1a73e8;
+            margin-top: 0;
         }
 
         .instructions ul {
@@ -183,303 +47,163 @@
         }
 
         .instructions li {
-            margin: 5px 0;
+            margin: 8px 0;
+        }
+
+        .game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .grid {
+            display: inline-block;
+            background-color: #e8f0fe;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: white;
+            border: 2px solid #1a73e8;
+            margin: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cell:hover {
+            background-color: #e8f0fe;
+        }
+
+        .cell.selected {
+            background-color: #1a73e8;
+            color: white;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: #1a73e8;
+            color: white;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #1557b0;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .word-list {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .word-list h3 {
+            margin-top: 0;
+            color: #1a73e8;
+        }
+
+        .word-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+        }
+
+        .word-list li {
+            background-color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .word-list li:hover {
+            background-color: #e8f0fe;
+        }
+
+        @media (max-width: 600px) {
+            .cell {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .word-list ul {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div class="container">
+        <h1>Word Block Puzzle</h1>
+        <div class="instructions">
+            <h2>How to Play</h2>
+            <ul>
+                <li>Find words in the grid by connecting letters horizontally, vertically, or diagonally.</li>
+                <li>Words must be at least 3 letters long.</li>
+                <li>You can swap any two letters to create new words.</li>
+                <li>Click "Submit" to check your words and calculate your score.</li>
+                <li>Longer words earn more points!</li>
+            </ul>
+        </div>
+        <div id="root"></div>
+    </div>
+
     <script type="text/babel">
-        // Initialize dictionary with comprehensive word list
-        let DICTIONARY = new Set([
-            // Common 3-letter words
-            'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'any', 'can', 'had', 'her',
-            'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new',
-            'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say',
-            'she', 'too', 'use', 'dad', 'mom', 'cat', 'dog', 'run', 'eat', 'fly', 'big', 'box',
-            'car', 'bus', 'map', 'red', 'end', 'top', 'sun', 'fun', 'ran', 'rod', 'air', 'arm', 'art', 'bad',
-            'bed', 'bee', 'bit', 'buy', 'can', 'cap', 'cry', 'cup', 'cut', 'dig', 'dry', 'ear', 'fan',
-            'fog', 'get', 'god', 'gun', 'gut', 'gym', 'had', 'ham', 'hat', 'hay', 'hex', 'hey', 'pan',
-            'hip', 'hit', 'hop', 'hot', 'how', 'hub', 'hue', 'hug', 'hut', 'ice', 'ink', 'inn',
-            'jam', 'jar', 'jaw', 'jay', 'jet', 'job', 'jog', 'joy', 'key', 'kid', 'kit', 'lab',
-            'lag', 'lap', 'law', 'lay', 'leg', 'let', 'lid', 'lie', 'lip', 'log', 'low', 'mad',
-            'man', 'map', 'mat', 'max', 'may', 'men', 'mix', 'mob', 'mud', 'mug', 'nap', 'net',
-            'new', 'nod', 'not', 'now', 'nut', 'oak', 'odd', 'off', 'oil', 'old', 'one', 'our',
-            'out', 'owe', 'owl', 'own', 'pad', 'pan', 'pat', 'pay', 'pea', 'pen', 'pet', 'pie',
-            'pig', 'pin', 'pit', 'pop', 'pot', 'pry', 'pub', 'pup', 'put', 'rag', 'ram', 'rap',
-            'rat', 'raw', 'ray', 'red', 'rib', 'rid', 'rim', 'rip', 'rob', 'rod', 'rot', 'row',
-            'rub', 'rug', 'rum', 'run', 'sad', 'sag', 'saw', 'say', 'sea', 'see', 'set', 'sew',
-            'shy', 'sin', 'sip', 'sir', 'sit', 'six', 'ski', 'sky', 'sly', 'spy', 'sum', 'sun',
-            'tab', 'tag', 'tan', 'tap', 'tar', 'tax', 'tea', 'ten', 'the', 'tie', 'tin', 'tip',
-            'toe', 'ton', 'too', 'top', 'toy', 'try', 'tub', 'two', 'use', 'van', 'vat', 'vet',
-            'vow', 'wag', 'war', 'was', 'wax', 'way', 'web', 'wed', 'wet', 'who', 'why', 'win',
-            'wit', 'won', 'wow', 'yes', 'yet', 'you', 'zip', 'zoo', 'ace', 'act', 'add', 'age',
-            'ago', 'aid', 'aim', 'ale', 'ant', 'ape', 'apt', 'arc', 'ark', 'arm', 'ash', 'ask',
-            'ate', 'axe', 'bag', 'ban', 'bar', 'bat', 'bay', 'beg', 'bet', 'bid', 'big', 'bin',
-            'bio', 'bit', 'bob', 'bog', 'bow', 'box', 'boy', 'bud', 'bug', 'bun', 'bus', 'but',
-            'cab', 'cam', 'can', 'cap', 'car', 'cat', 'cod', 'cog', 'cop', 'cow', 'coy', 'cry',
-            'cub', 'cue', 'cup', 'dam', 'den', 'dew', 'did', 'die', 'dig', 'dim', 'dip', 'doe',
-            'dog', 'dot', 'dry', 'dub', 'due', 'dug', 'dye', 'ear', 'eat', 'eel', 'egg', 'ego',
-            'elf', 'elm', 'end', 'era', 'eve', 'eye', 'fab', 'fad', 'fan', 'far', 'fat', 'fax',
-            'fed', 'fee', 'few', 'fig', 'fin', 'fir', 'fit', 'fix', 'flu', 'fly', 'fog', 'for',
-            'fox', 'fry', 'fun', 'fur', 'gap', 'gas', 'gel', 'gem', 'get', 'gin', 'got', 'gum',
-            'gun', 'gut', 'guy', 'gym', 'had', 'ham', 'has', 'hat', 'hay', 'hem', 'hen', 'her',
-            'hey', 'hid', 'him', 'hip', 'his', 'hit', 'hog', 'hop', 'hot', 'how', 'hub', 'hue',
-            'hug', 'hum', 'hut', 'ice', 'icy', 'ill', 'imp', 'ink', 'inn', 'ion', 'its', 'ivy',
-            'jab', 'jam', 'jar', 'jaw', 'jay', 'jet', 'jew', 'job', 'jog', 'joy', 'jug', 'key',
-            'kid', 'kin', 'kit', 'lab', 'lad', 'lag', 'lap', 'law', 'lay', 'led', 'leg', 'let',
-            'lid', 'lie', 'lip', 'lit', 'lob', 'log', 'lot', 'low', 'mad', 'man', 'map', 'mat',
-            'may', 'men', 'met', 'mid', 'mix', 'mob', 'mod', 'mom', 'mop', 'mud', 'mug', 'nab',
-            'nag', 'nap', 'nay', 'net', 'new', 'nib', 'nil', 'nip', 'nod', 'nor', 'not', 'now',
-            'nun', 'nut', 'oak', 'odd', 'off', 'oft', 'oil', 'old', 'one', 'opt', 'orb', 'ore',
-            'our', 'out', 'owl', 'own', 'pad', 'pal', 'pan', 'par', 'pat', 'paw', 'pay', 'pea',
-            'pen', 'per', 'pet', 'pie', 'pig', 'pin', 'pit', 'pod', 'pop', 'pot', 'pro', 'pry',
-            'pub', 'pug', 'pun', 'pup', 'put', 'rad', 'rag', 'ram', 'ran', 'rap', 'rat', 'raw',
-            'ray', 'red', 'ref', 'rib', 'rid', 'rig', 'rim', 'rip', 'rob', 'rod', 'rot', 'row',
-            'rub', 'rug', 'rum', 'run', 'rut', 'rye', 'sad', 'sag', 'sap', 'sat', 'saw', 'say',
-            'sea', 'see', 'set', 'sew', 'she', 'shy', 'sin', 'sip', 'sir', 'sit', 'six', 'ski',
-            'sky', 'sly', 'sob', 'sod', 'son', 'sow', 'spa', 'spy', 'sub', 'sue', 'sum', 'sun',
-            'sup', 'tab', 'tag', 'tan', 'tap', 'tar', 'tax', 'tea', 'ted', 'tee', 'ten', 'the',
-            'thy', 'tie', 'tin', 'tip', 'toe', 'ton', 'too', 'top', 'tot', 'tow', 'toy', 'try',
-            'tub', 'tug', 'two', 'use', 'van', 'vat', 'vet', 'via', 'vie', 'vow', 'wad', 'wag',
-            'wan', 'war', 'was', 'wax', 'way', 'web', 'wed', 'wee', 'wet', 'who', 'why', 'wig',
-            'win', 'wit', 'woe', 'won', 'woo', 'wow', 'wry', 'yam', 'yap', 'yaw', 'yea', 'yes',
-            'yet', 'you', 'zip', 'zoo',
-            // Common 4-letter words
-            'spot', 'blew', 'blow', 'blue', 'love', 'life', 'live', 'time', 'home', 'room', 'work', 'word', 'book', 'door',
-            'game', 'fish', 'bird', 'tree', 'seed', 'foot', 'hand', 'head', 'hear', 'help', 'salt',
-            'hold', 'hope', 'hurt', 'jump', 'keep', 'kill', 'kind', 'know', 'land', 'last', 'able',
-            'acid', 'aged', 'also', 'area', 'army', 'away', 'baby', 'back', 'ball', 'band', 'bank',
-            'base', 'bath', 'bear', 'beat', 'been', 'beer', 'bell', 'belt', 'best', 'bike', 'bird',
-            'bite', 'blue', 'boat', 'body', 'bomb', 'bond', 'bone', 'book', 'boom', 'born', 'boss',
-            'both', 'bowl', 'bulk', 'burn', 'bush', 'busy', 'cake', 'call', 'calm', 'came', 'camp',
-            'card', 'care', 'case', 'cash', 'cast', 'cave', 'cell', 'chat', 'chip', 'city', 'club',
-            'clue', 'coal', 'coat', 'code', 'cold', 'come', 'cook', 'cool', 'cope', 'copy', 'core',
-            'cost', 'crew', 'crop', 'dark', 'data', 'date', 'dawn', 'days', 'dead', 'deal', 'dean',
-            'dear', 'debt', 'deep', 'deny', 'desk', 'dial', 'diet', 'disc', 'disk', 'does', 'done',
-            'door', 'dose', 'down', 'draw', 'drew', 'drop', 'drug', 'drum', 'dual', 'duke', 'dust',
-            'duty', 'each', 'earn', 'ease', 'east', 'easy', 'edge', 'else', 'even', 'ever', 'evil',
-            'exit', 'face', 'fact', 'fail', 'fair', 'fall', 'farm', 'fast', 'fate', 'fear', 'feed',
-            'feel', 'feet', 'fell', 'felt', 'file', 'fill', 'film', 'find', 'fine', 'fire', 'firm',
-            'fish', 'five', 'flat', 'flow', 'food', 'foot', 'ford', 'form', 'fort', 'four', 'free',
-            'from', 'fuel', 'full', 'fund', 'gain', 'game', 'gate', 'gave', 'gear', 'gene', 'gift',
-            'girl', 'give', 'glad', 'goal', 'goes', 'gold', 'golf', 'gone', 'good', 'gray', 'grew',
-            'grey', 'grow', 'gulf', 'hair', 'half', 'hall', 'hand', 'hang', 'hard', 'harm', 'hate',
-            'have', 'head', 'hear', 'heat', 'held', 'hell', 'help', 'here', 'hero', 'high', 'hill',
-            'hire', 'hold', 'hole', 'holy', 'home', 'hope', 'host', 'hour', 'huge', 'hung', 'hunt',
-            'hurt', 'idea', 'inch', 'into', 'iron', 'item', 'jack', 'jane', 'jean', 'john', 'join',
-            'jump', 'jury', 'just', 'keen', 'keep', 'kent', 'kept', 'kick', 'kill', 'kind', 'king',
-            'knee', 'knew', 'know', 'lack', 'lady', 'laid', 'lake', 'land', 'lane', 'last', 'late',
-            'lead', 'left', 'less', 'life', 'lift', 'like', 'line', 'link', 'list', 'live', 'load',
-            'loan', 'lock', 'logo', 'long', 'look', 'lord', 'lose', 'loss', 'lost', 'love', 'luck',
-            'made', 'mail', 'main', 'make', 'male', 'many', 'mark', 'mass', 'matt', 'meal', 'mean',
-            'meat', 'meet', 'menu', 'mere', 'mike', 'mile', 'milk', 'mill', 'mind', 'mine', 'miss',
-            'mode', 'mood', 'moon', 'more', 'most', 'move', 'much', 'must', 'name', 'navy', 'near',
-            'neck', 'need', 'news', 'next', 'nice', 'nick', 'nine', 'none', 'nose', 'note', 'okay',
-            'once', 'only', 'onto', 'open', 'oral', 'over', 'pace', 'pack', 'page', 'paid', 'pain',
-            'pair', 'palm', 'park', 'part', 'pass', 'past', 'path', 'peak', 'pick', 'pink', 'pipe',
-            'plan', 'play', 'plot', 'plug', 'plus', 'poll', 'pool', 'poor', 'port', 'post', 'pull',
-            'pure', 'push', 'race', 'rail', 'rain', 'rank', 'rare', 'rate', 'read', 'real', 'rear',
-            'rely', 'rent', 'rest', 'rice', 'rich', 'ride', 'ring', 'rise', 'risk', 'road', 'rock',
-            'role', 'roll', 'roof', 'room', 'root', 'rose', 'rule', 'rush', 'ruth', 'safe', 'said',
-            'sake', 'sale', 'salt', 'same', 'sand', 'save', 'seat', 'seed', 'seek', 'seem', 'seen',
-            'self', 'sell', 'send', 'sent', 'sept', 'ship', 'shop', 'shot', 'show', 'shut', 'sick',
-            'side', 'sign', 'site', 'size', 'skin', 'slip', 'slow', 'snow', 'soft', 'soil', 'sold',
-            'sole', 'some', 'song', 'soon', 'sort', 'soul', 'spot', 'star', 'stay', 'step', 'stop',
-            'take', 'talk', 'tall', 'tank', 'tape', 'task', 'team', 'tear', 'tech', 'tell', 'tend',
-            'term', 'test', 'text', 'than', 'that', 'them', 'then', 'they', 'this', 'time', 'to',
-            'toe', 'told', 'tone', 'took', 'tool', 'top', 'tour', 'town', 'tree', 'try', 'turn', 'type',
-            'unit', 'up', 'upon', 'us', 'use', 'very', 'view', 'was', 'way', 'we', 'well', 'were',
-            'what', 'when', 'where', 'which', 'while', 'who', 'why', 'will', 'with', 'would', 'you',
-            'your', 'yours', 'zero'
-        ]);
-
-        function WordGridGame() {
-            // Generate random letter with weighted distribution
-            const generateLetter = () => {
-                const letters = 'AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSSSTTTTTTUUUUVVWWXYYZ';
-                return letters.charAt(Math.floor(Math.random() * letters.length));
-            };
-
-            // Initialize grid with random letters
-            const initializeGrid = () => {
-                return Array(5).fill().map(() => Array(5).fill().map(() => generateLetter()));
-            };
-
-            const [grid, setGrid] = React.useState(initializeGrid());
-            const [selectedCells, setSelectedCells] = React.useState([]);
-            const [swapsLeft, setSwapsLeft] = React.useState(5);
-            const [score, setScore] = React.useState(0);
-            const [foundWords, setFoundWords] = React.useState([]);
-
-            // Handle cell selection for swapping
-            const handleCellClick = (row, col) => {
-                if (selectedCells.length === 0) {
-                    // First cell selection
-                    setSelectedCells([[row, col]]);
-                } else if (selectedCells.length === 1) {
-                    // Second cell selection - perform swap
-                    const [firstRow, firstCol] = selectedCells[0];
-                    if (swapsLeft > 0 && (firstRow !== row || firstCol !== col)) {
-                        const newGrid = grid.map(r => [...r]);
-                        // Swap letters
-                        const temp = newGrid[firstRow][firstCol];
-                        newGrid[firstRow][firstCol] = newGrid[row][col];
-                        newGrid[row][col] = temp;
-                        setGrid(newGrid);
-                        setSwapsLeft(swapsLeft - 1);
-                    }
-                    setSelectedCells([]);
-                }
-            };
-
-            // Find all possible words in the grid
-            const findAllWords = () => {
-                const words = new Set();
-                
-                // Helper function to check if a word exists and add it
-                const checkAndAddWord = (word, type, row, col) => {
-                    const wordLower = word.toLowerCase();
-                    if (DICTIONARY.has(wordLower)) {
-                        console.log(`Found ${type} word: ${wordLower} at position: ${row},${col}`);
-                        words.add(wordLower);
-                    }
-                };
-
-                // Check horizontal words
-                for (let row = 0; row < 5; row++) {
-                    for (let col = 0; col < 5; col++) {
-                        // Check words starting at this position
-                        for (let len = 3; len <= 5 && col + len <= 5; len++) {
-                            let word = '';
-                            for (let i = 0; i < len; i++) {
-                                word += grid[row][col + i];
-                            }
-                            checkAndAddWord(word, 'horizontal', row, col);
-                        }
-                    }
-                }
-
-                // Check vertical words
-                for (let col = 0; col < 5; col++) {
-                    for (let row = 0; row < 5; row++) {
-                        // Check words starting at this position
-                        for (let len = 3; len <= 5 && row + len <= 5; len++) {
-                            let word = '';
-                            for (let i = 0; i < len; i++) {
-                                word += grid[row + i][col];
-                            }
-                            checkAndAddWord(word, 'vertical', row, col);
-                        }
-                    }
-                }
-
-                // Check diagonal words (down-right)
-                for (let row = 0; row < 5; row++) {
-                    for (let col = 0; col < 5; col++) {
-                        for (let len = 3; len <= 5 && row + len <= 5 && col + len <= 5; len++) {
-                            let word = '';
-                            for (let i = 0; i < len; i++) {
-                                word += grid[row + i][col + i];
-                            }
-                            checkAndAddWord(word, 'diagonal-right', row, col);
-                        }
-                    }
-                }
-
-                // Check diagonal words (down-left)
-                for (let row = 0; row < 5; row++) {
-                    for (let col = 0; col < 5; col++) {
-                        for (let len = 3; len <= 5 && row + len <= 5 && col - len + 1 >= 0; len++) {
-                            let word = '';
-                            for (let i = 0; i < len; i++) {
-                                word += grid[row + i][col - i];
-                            }
-                            checkAndAddWord(word, 'diagonal-left', row, col);
-                        }
-                    }
-                }
-
-                const foundWords = Array.from(words);
-                console.log('All found words:', foundWords);
-                return foundWords;
-            };
-
-            const calculateScore = (words) => {
-                return words.reduce((score, word) => {
-                    const length = word.length;
-                    // Score more points for longer words
-                    const points = length === 3 ? 3 : length === 4 ? 5 : 8;
-                    return score + points;
-                }, 0);
-            };
-
-            const handleSubmit = () => {
-                const words = findAllWords();
-                setFoundWords(words);
-                setScore(calculateScore(words));
-            };
-
-            const handleReset = () => {
-                setGrid(initializeGrid());
-                setSelectedCells([]);
-                setSwapsLeft(5);
-                setScore(0);
-                setFoundWords([]);
-            };
-
-            return (
-                <div className="container">
-                    <h1>Word Block Puzzle</h1>
-                    
-                    <div className="instructions">
-                        <h3>How to Play</h3>
-                        <ul>
-                            <li>Find words in the grid (3-5 letters)</li>
-                            <li>Words can be horizontal, vertical, or diagonal</li>
-                            <li>Click two letters to swap them (5 swaps max)</li>
-                            <li>Submit when you're ready to check your words</li>
-                        </ul>
-                    </div>
-
-                    <div className="swaps-remaining">Swaps Remaining: <span id="swapsCount">{swapsLeft}</span></div>
-                    
-                    <div className="grid" id="grid">
-                        {grid.map((row, i) => 
-                            row.map((cell, j) => {
-                                const isSelected = selectedCells.some(([r, c]) => r === i && c === j);
-                                return (
-                                    <div 
-                                        key={`${i}-${j}`}
-                                        className={`cell ${isSelected ? 'selected' : ''}`}
-                                        onClick={() => handleCellClick(i, j)}
-                                    >
-                                        {cell}
-                                    </div>
-                                );
-                            })
-                        )}
-                    </div>
-
-                    <div className="controls">
-                        <button onClick={handleSubmit}>Submit Grid</button>
-                        <button onClick={handleReset}>New Game</button>
-                    </div>
-
-                    <div className="score">Score: <span id="score">{score}</span></div>
-
-                    <div className="stats">
-                        <div>Found Words:</div>
-                        <div className="found-words" id="foundWords">
-                            {foundWords.map((word, index) => (
-                                <span key={index} className="word-chip">{word}</span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
+        import WordGridGame from './game.js';
         ReactDOM.render(<WordGridGame />, document.getElementById('root'));
     </script>
 </body>
