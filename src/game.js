@@ -40,7 +40,6 @@ function WordGridGame() {
     });
     const [time, setTime] = React.useState(0);
     const [isTimerRunning, setIsTimerRunning] = React.useState(false);
-    const timerRef = React.useRef(null);
 
     // Timer effect
     React.useEffect(() => {
@@ -49,8 +48,6 @@ function WordGridGame() {
             interval = setInterval(() => {
                 setTime(prevTime => prevTime + 1);
             }, 1000);
-        } else {
-            clearInterval(interval);
         }
         return () => clearInterval(interval);
     }, [isTimerRunning]);
@@ -76,7 +73,7 @@ function WordGridGame() {
     const updateHighScore = (newScore) => {
         if (newScore > highScore) {
             setHighScore(newScore);
-            localStorage.setItem('wordBlockHighScore', newScore.toString());
+            localStorage.setItem('wordBlockHighScore', newScore);
         }
     };
 
