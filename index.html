@@ -25,6 +25,7 @@
             max-width: 600px;
             width: 90%;
             text-align: center;
+            margin: 2rem auto;
         }
 
         h1 {
@@ -34,15 +35,18 @@
             font-weight: 600;
         }
 
+        #grid {
+            margin: 20px auto;
+            max-width: 400px;
+            width: 100%;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 10px;
-            margin: 20px auto;
-            max-width: 400px;
-            width: 100%;
-            padding: 10px;
-            background: white;
+            padding: 15px;
+            background: #f8f9fa;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
@@ -63,6 +67,7 @@
             align-items: center;
             justify-content: center;
             min-height: 60px;
+            padding: 10px;
         }
 
         .cell.locked {
@@ -293,7 +298,7 @@
             <p>Time: <span id="timer">0:00</span></p>
             <p>High Score: <span id="highScore">0</span></p>
         </div>
-        <div class="grid" id="grid"></div>
+        <div id="grid" class="grid"></div>
         <div class="button-container">
             <button id="submitGrid">Submit Grid</button>
             <button id="resetGame">New Game</button>
@@ -1050,12 +1055,12 @@
         function initializeGrid() {
             grid = Array(5).fill().map(() => Array(5).fill(''));
             const gridElement = document.getElementById('grid');
-            gridElement.innerHTML = '';
-
+            
             // Create a container for the grid
             const gridContainer = document.createElement('div');
             gridContainer.className = 'grid';
-
+            
+            // Generate and add cells
             for (let i = 0; i < 5; i++) {
                 for (let j = 0; j < 5; j++) {
                     const cell = document.createElement('div');
@@ -1069,8 +1074,8 @@
                     gridContainer.appendChild(cell);
                 }
             }
-
-            // Clear the grid element and append the new container
+            
+            // Clear and append the new grid
             gridElement.innerHTML = '';
             gridElement.appendChild(gridContainer);
         }
