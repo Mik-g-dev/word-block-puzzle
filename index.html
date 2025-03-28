@@ -740,7 +740,7 @@
             const handleShare = () => {
                 const today = new Date();
                 const dateString = today.toLocaleDateString();
-                const shareText = `🎮 Word Block Puzzle Score 🎮\n\nScore: ${score} points\nTime: ${formatTime(time)}\nWords Found: ${foundWords.size}\n\nPlay at: https://mik-g-dev.github.io/word-block-puzzle/`;
+                const shareText = `🎮 Word Block Puzzle Score 🎮\n\nScore: ${score} points\nTime: ${formatTime(time)}\nWords Found: ${foundWords.size}\n\nPlay at: https://mik-g-dev.github.io/word-block-puzzle/\n${dateString}`;
                 
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(shareText)
