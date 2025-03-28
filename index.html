@@ -284,6 +284,29 @@
             border-color: #bfdbfe;
         }
 
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: fadeInOut 3s ease;
+            text-align: center;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, 20px); }
+            10% { opacity: 1; transform: translate(-50%, 0); }
+            90% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -20px); }
+        }
+
         @media (max-width: 600px) {
             .cell {
                 width: 45px;
@@ -526,6 +549,9 @@
             });
             const [time, setTime] = React.useState(0);
             const [isTimerRunning, setIsTimerRunning] = React.useState(false);
+            const [swapsRemaining, setSwapsRemaining] = React.useState(5);
+            const [shareMessage, setShareMessage] = React.useState('');
+            const [showShareToast, setShowShareToast] = React.useState(false);
 
             // Timer effect
             React.useEffect(() => {
@@ -563,32 +589,57 @@
                 }
             };
 
+            // Generate a deterministic seed for a given date
+            const generateDailySeed = (date) => {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const day = date.getDate();
+                return year * 10000 + month * 100 + day;
+            };
+
+            // Pseudo-random number generator with seed
+            const seededRandom = (seed) => {
+                const x = Math.sin(seed++) * 10000;
+                return x - Math.floor(x);
+            };
+
+            // Generate a letter using seeded random generator
+            const generateSeededLetter = (seed) => {
+                const vowels = 'aeiou';
+                const consonants = 'bcdfghjklmnpqrstvwxyz';
+                const weights = {
+                    vowels: 0.4,
+                    consonants: 0.6
+                };
+                
+                const random = seededRandom(seed);
+                if (random < weights.vowels) {
+                    return vowels[Math.floor(seededRandom(seed + 1) * vowels.length)];
+                } else {
+                    return consonants[Math.floor(seededRandom(seed + 2) * consonants.length)];
+                }
+            };
+            
             // Initialize grid effect
             React.useEffect(() => {
                 console.log("Initializing grid...");
+                const today = new Date();
+                const seed = generateDailySeed(today);
                 const newGrid = Array(5).fill().map(() => Array(5).fill(''));
                 
+                let seedOffset = 0;
                 for (let i = 0; i < 5; i++) {
                     for (let j = 0; j < 5; j++) {
-                        const letter = generateRandomLetter().toUpperCase();
+                        const letter = generateSeededLetter(seed + seedOffset).toUpperCase();
                         newGrid[i][j] = letter;
+                        seedOffset++;
                     }
                 }
                 
                 console.log("Grid initialized:", newGrid);
                 setGrid(newGrid);
                 setIsTimerRunning(true);
-                
-                // Hint: Uncomment this to test with a fixed grid
-                /*
-                setGrid([
-                    ['A', 'B', 'C', 'D', 'E'],
-                    ['F', 'G', 'H', 'I', 'J'],
-                    ['K', 'L', 'M', 'N', 'O'],
-                    ['P', 'Q', 'R', 'S', 'T'],
-                    ['U', 'V', 'W', 'X', 'Y']
-                ]);
-                */
+                setSwapsRemaining(5);
             }, []);
 
             // Find all words in the grid
@@ -655,7 +706,7 @@
 
             // Handle swap
             const handleSwap = () => {
-                if (selectedCells.length === 2) {
+                if (selectedCells.length === 2 && swapsRemaining > 0) {
                     const [first, second] = selectedCells;
                     const row1 = Math.floor(first / 5);
                     const col1 = first % 5;
@@ -669,6 +720,7 @@
 
                     setGrid(newGrid);
                     setSelectedCells([]);
+                    setSwapsRemaining(swapsRemaining - 1);
                 }
             };
 
@@ -684,15 +736,45 @@
                 stopTimer();
             }, [grid]);
 
+            // Handle share
+            const handleShare = () => {
+                const today = new Date();
+                const dateString = today.toLocaleDateString();
+                const shareText = `Word Block Puzzle ${dateString}\nScore: ${score}\nWords found: ${foundWords.size}\nTime: ${formatTime(time)}`;
+                
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(shareText)
+                        .then(() => {
+                            setShareMessage('Results copied to clipboard!');
+                            setShowShareToast(true);
+                            setTimeout(() => setShowShareToast(false), 3000);
+                        })
+                        .catch(err => {
+                            console.error('Could not copy text: ', err);
+                            setShareMessage('Failed to copy to clipboard');
+                            setShowShareToast(true);
+                            setTimeout(() => setShowShareToast(false), 3000);
+                        });
+                } else {
+                    setShareMessage('Clipboard not supported on your browser');
+                    setShowShareToast(true);
+                    setTimeout(() => setShowShareToast(false), 3000);
+                }
+            };
+
             // Handle reset
             const handleReset = () => {
                 console.log("Resetting game...");
+                const today = new Date();
+                const seed = generateDailySeed(today);
                 const newGrid = Array(5).fill().map(() => Array(5).fill(''));
                 
+                let seedOffset = 0;
                 for (let i = 0; i < 5; i++) {
                     for (let j = 0; j < 5; j++) {
-                        const letter = generateRandomLetter().toUpperCase();
+                        const letter = generateSeededLetter(seed + seedOffset).toUpperCase();
                         newGrid[i][j] = letter;
+                        seedOffset++;
                     }
                 }
                 
@@ -702,6 +784,7 @@
                 setScore(0);
                 setTime(0);
                 setIsTimerRunning(true);
+                setSwapsRemaining(5);
             };
 
             return (
@@ -712,6 +795,9 @@
                         </div>
                         <div className="stat-item">
                             <span>Swapped: {selectedCells.length}/2</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>Swaps Left: {swapsRemaining}/5</span>
                         </div>
                         <div className="stat-item">
                             <span>Words: {foundWords.size}</span>
@@ -741,14 +827,23 @@
                     </div>
 
                     <div className="controls">
-                        <button onClick={handleSwap} disabled={selectedCells.length !== 2}>
+                        <button onClick={handleSwap} disabled={selectedCells.length !== 2 || swapsRemaining <= 0}>
                             Swap
                         </button>
                         <button onClick={handleSubmit} disabled={selectedCells.length !== 0}>
                             Submit
                         </button>
                         <button onClick={handleReset}>Reset</button>
+                        <button onClick={handleShare} disabled={foundWords.size === 0}>
+                            Share
+                        </button>
                     </div>
+
+                    {showShareToast && 
+                        <div className="toast-message">
+                            {shareMessage}
+                        </div>
+                    }
 
                     <div className="word-list">
                         <h3>Found Words:</h3>
