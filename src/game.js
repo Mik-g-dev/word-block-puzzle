@@ -1,5 +1,3 @@
-import DICTIONARY from './dictionary.js';
-
 // Helper function to generate random letters with weighted distribution
 function generateRandomLetter() {
     const vowels = 'aeiou';
@@ -19,7 +17,7 @@ function generateRandomLetter() {
 
 // Helper function to check if a word exists in the dictionary
 function isValidWord(word) {
-    return DICTIONARY.has(word.toLowerCase());
+    return window.DICTIONARY.has(word.toLowerCase());
 }
 
 // Helper function to check and add a word if it's valid
@@ -29,7 +27,7 @@ function checkAndAddWord(word, foundWords) {
     }
 }
 
-function WordGridGame() {
+window.WordGridGame = function() {
     const [grid, setGrid] = React.useState([]);
     const [selectedCells, setSelectedCells] = React.useState([]);
     const [foundWords, setFoundWords] = React.useState(new Set());
@@ -280,6 +278,4 @@ function WordGridGame() {
             </div>
         </div>
     );
-}
-
-export default WordGridGame; 
+}; 
