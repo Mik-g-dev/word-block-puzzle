@@ -230,6 +230,21 @@
             animation: hintPulse 1s infinite;
         }
 
+        .hint-arrow {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #4299e1;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation: arrowPulse 1s infinite;
+        }
+
+        @keyframes arrowPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         @keyframes hintPulse {
             0% { box-shadow: 0 0 0 0 rgba(66, 153, 225, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(66, 153, 225, 0); }
@@ -253,6 +268,13 @@
 
         .share-feedback.show {
             opacity: 1;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -20px); }
+            10% { opacity: 1; transform: translate(-50%, 0); }
+            90% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -20px); }
         }
     </style>
 </head>
@@ -749,24 +771,88 @@
         function showHint() {
             if (remainingSwaps <= 0) return;
             
-            const words = findAllWords();
-            if (words.size === 0) return;
+            const allWords = findAllWords();
+            if (allWords.size === 0) return;
 
-            const word = Array.from(words)[0];
-            const positions = findWordPositions(word);
+            // Find the most valuable word that hasn't been found yet
+            let bestWord = null;
+            let bestScore = 0;
+            
+            for (const word of allWords) {
+                if (!foundWords.has(word)) {
+                    const wordScore = Math.pow(2, word.length - 3);
+                    if (wordScore > bestScore) {
+                        bestScore = wordScore;
+                        bestWord = word;
+                    }
+                }
+            }
+
+            if (!bestWord) return;
+
+            const positions = findWordPositions(bestWord);
             if (positions) {
+                // Add highlight animation to each cell
                 positions.forEach(({row, col}) => {
                     const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
                     cell.classList.add('hint-highlight');
                 });
+
+                // Add direction arrow
+                const firstCell = document.querySelector(`[data-row="${positions[0].row}"][data-col="${positions[0].col}"]`);
+                const lastCell = document.querySelector(`[data-row="${positions[positions.length-1].row}"][data-col="${positions[positions.length-1].col}"]`);
                 
+                const arrow = document.createElement('div');
+                arrow.className = 'hint-arrow';
+                
+                // Calculate arrow position and rotation
+                const firstRect = firstCell.getBoundingClientRect();
+                const lastRect = lastCell.getBoundingClientRect();
+                const dx = lastRect.left - firstRect.left;
+                const dy = lastRect.top - firstRect.top;
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                arrow.style.left = `${firstRect.left + firstRect.width/2}px`;
+                arrow.style.top = `${firstRect.top + firstRect.height/2}px`;
+                arrow.style.transform = `rotate(${angle}deg)`;
+                
+                document.body.appendChild(arrow);
+                
+                // Remove highlights and arrow after delay
                 setTimeout(() => {
                     positions.forEach(({row, col}) => {
                         const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
                         cell.classList.remove('hint-highlight');
                     });
-                }, 2000);
+                    arrow.remove();
+                }, 3000);
+
+                // Show word length hint
+                const hintText = document.createElement('div');
+                hintText.style.position = 'fixed';
+                hintText.style.top = '20px';
+                hintText.style.left = '50%';
+                hintText.style.transform = 'translateX(-50%)';
+                hintText.style.background = '#4299e1';
+                hintText.style.color = 'white';
+                hintText.style.padding = '10px 20px';
+                hintText.style.borderRadius = '5px';
+                hintText.style.fontWeight = 'bold';
+                hintText.style.animation = 'fadeInOut 3s forwards';
+                hintText.textContent = `Hint: Look for a ${bestWord.length}-letter word (${bestScore} points)`;
+                document.body.appendChild(hintText);
+                
+                setTimeout(() => {
+                    hintText.remove();
+                }, 3000);
             }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -20px); }
+            10% { opacity: 1; transform: translate(-50%, 0); }
+            90% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -20px); }
         }
 
         function findWordPositions(word) {
