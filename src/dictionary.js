@@ -160,6 +160,4 @@ window.DICTIONARY = new Set([
     'virus', 'visit', 'vital', 'voice', 'waste', 'watch', 'water', 'wheel', 'where', 'which',
     'white', 'whole', 'whose', 'woman', 'world', 'worry', 'would', 'wound', 'write', 'wrong',
     'yield', 'young', 'youth'
-]);
-
-export default window.DICTIONARY; 
+]); 
