@@ -25,7 +25,6 @@
             max-width: 600px;
             width: 90%;
             text-align: center;
-            margin: 2rem auto;
         }
 
         h1 {
@@ -35,39 +34,30 @@
             font-weight: 600;
         }
 
-        #grid {
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
             margin: 20px auto;
             max-width: 400px;
             width: 100%;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
         .cell {
             aspect-ratio: 1;
-            border: 2px solid #e2e8f0;
-            background: #ffffff;
+            border: none;
+            background: #f8f9fa;
             font-size: 1.8rem;
             font-weight: bold;
             color: #2c3e50;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 12px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             text-transform: uppercase;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 60px;
-            padding: 10px;
         }
 
         .cell.locked {
@@ -1055,12 +1045,8 @@
         function initializeGrid() {
             grid = Array(5).fill().map(() => Array(5).fill(''));
             const gridElement = document.getElementById('grid');
-            
-            // Create a container for the grid
-            const gridContainer = document.createElement('div');
-            gridContainer.className = 'grid';
-            
-            // Generate and add cells
+            gridElement.innerHTML = '';
+
             for (let i = 0; i < 5; i++) {
                 for (let j = 0; j < 5; j++) {
                     const cell = document.createElement('div');
@@ -1071,13 +1057,9 @@
                     cell.dataset.row = i;
                     cell.dataset.col = j;
                     cell.addEventListener('click', handleCellClick);
-                    gridContainer.appendChild(cell);
+                    gridElement.appendChild(cell);
                 }
             }
-            
-            // Clear and append the new grid
-            gridElement.innerHTML = '';
-            gridElement.appendChild(gridContainer);
         }
 
         // Initialize the game
